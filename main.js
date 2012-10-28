@@ -1,7 +1,7 @@
 
 require.config({
   paths: {
-    "remotestorage": "lib/remotestorage"
+    "remotestorage": "../../src"
   }
 });
 
