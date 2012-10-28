@@ -1,0 +1,3 @@
+[submodule "lib/remotestorage"]
+	path = lib/remotestorage
+	url = git://github.com/RemoteStorage/remoteStorage.js
