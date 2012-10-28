@@ -1,9 +1,10 @@
 define([
   'require',
+  'jquery',
   'remotestorage/remoteStorage',
   'remotestorage/modules/root',
   './common'
-], function(require, remoteStorage, root, common) {
+], function(require, $, remoteStorage, root, common) {
 
   var parentPath = remoteStorage.util.containingDir;
   var isDir = remoteStorage.util.isDir;

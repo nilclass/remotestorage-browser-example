@@ -1,10 +1,11 @@
 
 define([
   'require',
+  'jquery',
   'remotestorage/remoteStorage',
   'remotestorage/modules/root',
   './common'
-], function(require, remoteStorage, root, common) {
+], function(require, jquery, remoteStorage, root, common) {
 
   var util = remoteStorage.util;
 

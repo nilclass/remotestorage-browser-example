@@ -1,10 +1,12 @@
 define([
+  'jquery',
+  'bootstrap',
   'remotestorage/remoteStorage',
   'remotestorage/modules/root',
-  './src/common',
-  './src/tree',
-  './src/settings'
-], function(remoteStorage, root, common, tree, settings) {
+  './common',
+  './tree',
+  './settings',
+], function($, _ignored, remoteStorage, root, common, tree, settings) {
 
   var util = remoteStorage.util;
 
