@@ -111,6 +111,9 @@ define([
 
   function openTree(li) {
     var path = li.attr('data-path');
+    if(remoteStorage.root.getListing(path).length == 0) {
+      return;
+    }
     storeOpened(path, true);
     expandDir(path);
     loadTree(path);
