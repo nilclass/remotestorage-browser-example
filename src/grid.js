@@ -5,15 +5,19 @@ define([
   'remotestorage/remoteStorage',
   'remotestorage/modules/root',
   './common'
-], function(require, jquery, remoteStorage, root, common) {
+], function(require, jquery, remoteStorage, root, _common) {
 
   var util = remoteStorage.util;
 
-  function jumpTo() {
-    if(! common) {
-      common = require('./common');
+  function common() {
+    if(! _common) {
+      _common = require('./common');
     }
-    common.jumpTo.apply(common, arguments);
+    return _common;
+  }
+
+  function jumpTo() {
+    common().jumpTo.apply(common, arguments);
   }
 
   function pathParts(path) {
@@ -128,7 +132,7 @@ define([
         var row = $('<tr>');
         var node = remoteStorage.root.getDocument(path + key);
         var jsonType = '';
-        if((! util.isDir(key)) && node.mimeType == 'application/json' && node.data['@type']) {
+        if((! util.isDir(key)) && node && node.mimeType == 'application/json' && node.data['@type']) {
           jsonType = node.data['@type'];
         }
         row.attr('data-path', path + key);
@@ -216,6 +220,15 @@ define([
     adjustButtons();
   }
 
+  function displayImage(path, data, mimeType) {
+    var view = new Uint8Array(data);
+    var blob = new Blob([view], { type: mimeType });
+    var img = $('<img>')
+      .attr('src', common().createObjectURL(blob))
+      .attr('data-path', path);
+    $('#content').append(img);
+  }
+
   function makeTab(label, path, name, activeMode) {
     return $('<li>')
       .addClass(activeMode == name ? 'active' : '')
@@ -244,7 +257,11 @@ define([
     $('#content').append(btnGroup);
     $('#content').append($('<div id="notice-container">'));
 
-    displayForm(path, item.data, item.mimeType, mode);
+    if(item.mimeType.match(/^image\/.*/)) {
+      displayImage(path, item.data, item.mimeType);
+    } else {
+      displayForm(path, item.data, item.mimeType, mode);
+    }
   }
 
   $('#content table tbody td').live('click', function(event) {
@@ -264,6 +281,9 @@ define([
     var container = $('#content form');
     if(container.length == 0) {
       container = $('#content table');
+    }
+    if(container.length == 0) {
+      container = $('#content img');
     }
     path = container.attr('data-path');
 
