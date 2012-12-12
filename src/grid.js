@@ -95,60 +95,66 @@ define([
     var loading = $('<em>Loading...</em>');
     $('#content').append(loading);
 
-    remoteStorage.root.syncOnce(path, function() {
+    // FIXME: sync once here!!!
 
-      loading.remove();
+    loading.remove();
 
-      var table = $('<table class="table table-striped dir-listing">');
-      table.attr('data-path', path);
-      var titleRow = $('<tr>');
-      titleRow.append('<th></th>');
-      titleRow.append('<th>Name</th>');
-      titleRow.append('<th>MIME type</th>');
-      titleRow.append('<th>JSON-LD type</th>');
-      titleRow.append('<th>Last updated</th>');
-      table.append(titleRow);
-      $('#content').append(table);
+    var table = $('<table class="table table-striped dir-listing">');
+    table.attr('data-path', path);
+    var titleRow = $('<tr>');
+    titleRow.append('<th></th>');
+    titleRow.append('<th>Name</th>');
+    titleRow.append('<th>MIME type</th>');
+    titleRow.append('<th>JSON-LD type</th>');
+    titleRow.append('<th>Last updated</th>');
+    table.append(titleRow);
+    $('#content').append(table);
 
-      var tbody = $('<tbody>');
-      table.append(tbody);
+    var tbody = $('<tbody>');
+    table.append(tbody);
 
-      var items = root.getObject(path);
+    root.getObject(path).
+      then(function(items) {
 
-      if(! items) {
-        if(path != '/') {
-          common.jumpTo(util.containingDir(path));
-        } else {
-          alert("BUG: root node doesn't exist.");
+        function renderRow(key)  {
+          var row = $('<tr>');
+          remoteStorage.root.getFile(path + key).then(function(node) {
+            var jsonType = '';
+            if((! util.isDir(key)) && node && node.mimeType == 'application/json' && node.data['@type']) {
+              jsonType = node.data['@type'];
+            }
+            row.attr('data-path', path + key);
+            row.append($('<td>').append($('<span>').addClass(util.isDir(path + key) ? 'icon-folder-open' : 'icon-file')));
+            row.append($('<td class="name">').text(key));
+            row.append($('<td>').text(node.mimeType));
+            row.append($('<td title="' + jsonType + '">').text(jsonType.split('/').slice(-2).join('/')));
+            row.append($('<td>').text(new Date(items[key])));
+            
+            root.hasDiff(path + key).
+              then(function(result) {
+                result && row.addClass('has-diff');
+              });
+          });
+          return row;
         }
-        return;
-      }
-      var keys = sortKeys(Object.keys(items));
-      for(var i in keys) {
-        var key = keys[i];
 
-        if(path == '/' && key == 'public/') { continue; }
+        if(! items) {
+          if(path != '/') {
+            common.jumpTo(util.containingDir(path));
+          } else {
+            alert("BUG: root node doesn't exist.");
+          }
+          return;
+        }
+        var keys = sortKeys(Object.keys(items));
+        for(var i in keys) {
+          var key = keys[i];
 
-        var row = $('<tr>');
-        var node = remoteStorage.root.getDocument(path + key);
-        var jsonType = '';
-        if((! util.isDir(key)) && node && node.mimeType == 'application/json' && node.data['@type']) {
-          jsonType = node.data['@type'];
+          if(path == '/' && key == 'public/') { continue; }
+
+          tbody.append(renderRow(key));
         }
-        row.attr('data-path', path + key);
-        row.append($('<td>').append($('<span>').addClass(util.isDir(path + key) ? 'icon-folder-open' : 'icon-file')));
-        row.append($('<td class="name">').text(key));
-        row.append($('<td>').text(node.mimeType));
-        row.append($('<td title="' + jsonType + '">').text(jsonType.split('/').slice(-2).join('/')));
-        row.append($('<td>').text(new Date(items[key])));
-        
-        if(root.hasDiff(path + key)) {
-          row.addClass('has-diff');
-        }
-        
-        tbody.append(row);
-      }
-    });
+      });
   }
 
   function openDirectory(path) {
@@ -244,24 +250,25 @@ define([
 
     $('#content').append(makeBreadcrumbs(path));
 
-    var item = util.isDir(path) ? {} : root.getDocument(path);
+    root.getFile(path).then(function(item) {
 
-    var btnGroup = $('<div class="btn-group"></div>');
-    btnGroup.append(makeButton("back", "Back", "icon-arrow-left"));
-    btnGroup.append(makeButton("save", "Save", "icon-ok"));
-    if(item.data) {
-      btnGroup.append(makeButton("reset", "Reset", "icon-remove"));
-      btnGroup.append(makeButton("destroy", "Destroy", "icon-trash"));
-    }
+      var btnGroup = $('<div class="btn-group"></div>');
+      btnGroup.append(makeButton("back", "Back", "icon-arrow-left"));
+      btnGroup.append(makeButton("save", "Save", "icon-ok"));
+      if(item.data) {
+        btnGroup.append(makeButton("reset", "Reset", "icon-remove"));
+        btnGroup.append(makeButton("destroy", "Destroy", "icon-trash"));
+      }
 
-    $('#content').append(btnGroup);
-    $('#content').append($('<div id="notice-container">'));
+      $('#content').append(btnGroup);
+      $('#content').append($('<div id="notice-container">'));
 
-    if(item.mimeType.match(/^image\/.*/)) {
-      displayImage(path, item.data, item.mimeType);
-    } else {
-      displayForm(path, item.data, item.mimeType, mode);
-    }
+      if(item.mimeType.match(/^image\/.*/)) {
+        displayImage(path, item.data, item.mimeType);
+      } else {
+        displayForm(path, item.data, item.mimeType, mode);
+      }
+    });
   }
 
   $('#content table tbody td').live('click', function(event) {

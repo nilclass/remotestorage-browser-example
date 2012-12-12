@@ -12,7 +12,8 @@ define([
 
   $(function() {
 
-    remoteStorage.util.setLogLevel('debug');
+    //remoteStorage.util.setLogLevel('debug');
+    remoteStorage.util.silenceAllLoggers();
 
     tree.setLoading('/');
     tree.setLoading('/public/');
@@ -41,8 +42,8 @@ define([
       console.error('conflict', event);
     });
 
-    root.setOnChange(function() {
-      //console.log("EVENT", arguments);
+    root.on('change', function() {
+      console.log("EVENT", arguments);
     });
 
     remoteStorage.claimAccess('root', 'rw');

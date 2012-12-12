@@ -45,9 +45,9 @@ define([
       li.append($('<span class="icon-none"></span>'));
     }
     li.append($('<span class="name"></span>').text(item));
-    if(root.hasDiff(fullPath)) {
-      li.addClass('has-diff');
-    }
+    root.hasDiff(fullPath).then(function(result) {
+      result && li.addClass('has-diff');
+    });
     if($('#directory-tree').attr('data-current') == fullPath) {
       li.addClass('current');
     }
@@ -64,12 +64,13 @@ define([
       return;
     }
 
-    var items = root.getListing(path).sort();
-    items.forEach(function(item) {
-      if(path == '/' && item == 'public/') return;
-      if(isDir(item)) {
-        parentElement.append(buildDirNode(path, item));
-      }
+    root.getListing(path).call('sort').then(function(items) {
+      items.forEach(function(item) {
+        if(path == '/' && item == 'public/') return;
+        if(isDir(item)) {
+          parentElement.append(buildDirNode(path, item));
+        }
+      });
     });
   }
 
