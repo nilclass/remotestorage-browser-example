@@ -6,14 +6,22 @@ define([
   './common',
   './tree',
   './settings',
-], function($, _ignored, remoteStorage, root, common, tree, settings) {
+  'remotestorage/lib/shell'
+], function($, _ignored, remoteStorage, root, common, tree, settings, shell) {
+
+  window.shell = shell;
 
   var util = remoteStorage.util;
+
+  remoteStorage.util.silenceAllLoggers();
+  remoteStorage.util.unsilenceLogger('store', 'sync', 'schedule');
+
+  // remoteStorage.util.setLogLevel('debug');
 
   $(function() {
 
     //remoteStorage.util.setLogLevel('debug');
-    remoteStorage.util.silenceAllLoggers();
+    // remoteStorage.util.silenceAllLoggers();
 
     tree.setLoading('/');
     tree.setLoading('/public/');
@@ -46,8 +54,10 @@ define([
       console.log("EVENT", arguments);
     });
 
-    remoteStorage.claimAccess('root', 'rw');
-    remoteStorage.displayWidget('remotestorage-connect');
+    remoteStorage.claimAccess('root', 'rw').
+      then(function() {
+        remoteStorage.displayWidget('remotestorage-connect');
+      });
 
     $(window).bind('popstate', function() {
       var md = document.location.hash.match(/^#!(.+?)(?:!(.+)|)$/);

@@ -142,7 +142,7 @@ define([
           if(path != '/') {
             common.jumpTo(util.containingDir(path));
           } else {
-            alert("BUG: root node doesn't exist.");
+            throw("BUG: root node doesn't exist.");
           }
           return;
         }
@@ -273,7 +273,9 @@ define([
 
   $('#content table tbody td').live('click', function(event) {
     var path = $(event.target).closest('tr').attr('data-path');
-    jumpTo(path);
+    if(path) {
+      jumpTo(path);
+    }
   });
 
   function adjustButtons() {
@@ -363,17 +365,18 @@ define([
       path += baseName;
     }
 
-    if(fileName != baseName) {
-      var newPath = util.containingDir(path) + fileName;
-      root.setDocument(mimeType, newPath, data);
-      root.removeObject(path);
-      path = newPath;
-    } else {
-      root.setDocument(mimeType, path, data);
-    }
+    var newPath = util.containingDir(path) + fileName;
 
-
-    jumpTo(util.containingDir(path));
+    var newPath = util.containingDir(path) + fileName;
+    root.storeFile(mimeType, newPath, data).
+      then(function() {
+        if(newPath !== path) {
+          return root.remove(path);
+        }
+      }).
+      then(function() {
+        jumpTo(util.containingDir(newPath));
+      });
   });
 
   // DESTROY FILE

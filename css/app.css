@@ -136,3 +136,26 @@ body.connected #disconnected {
 #content form .input input:hover, #content form .input input:focus {
     border-color: black;
 }
+
+#content h2 {
+    font-size: 1.2em;
+    margin: 0;
+    text-align: center;
+}
+
+#content .schedule, #content .state {
+    border: solid 1px black;
+    float: left;
+    padding: 10px 15px 20px 15px;
+    margin: 10px;
+}
+
+#content .schedule td, #content .schedule th {
+    border: solid 1px black;
+    border-collapse: collapse;
+    padding: 5px;
+}
+
+#content .node-table {
+    clear: both;
+}
