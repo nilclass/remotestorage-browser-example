@@ -120,7 +120,7 @@ define([
           var row = $('<tr>');
           remoteStorage.root.getFile(path + key).then(function(node) {
             var jsonType = '';
-            if((! util.isDir(key)) && node && node.mimeType == 'application/json' && node.data['@type']) {
+            if((! util.isDir(key)) && node && node.mimeType == 'application/json' && node.data && node.data['@type']) {
               jsonType = node.data['@type'];
             }
             row.attr('data-path', path + key);

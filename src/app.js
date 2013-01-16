@@ -9,14 +9,14 @@ define([
   'remotestorage/lib/shell'
 ], function($, _ignored, remoteStorage, root, common, tree, settings, shell) {
 
+  window.remoteStorage = remoteStorage;
+
   window.shell = shell;
 
   var util = remoteStorage.util;
 
   remoteStorage.util.silenceAllLoggers();
-  remoteStorage.util.unsilenceLogger('store', 'sync', 'schedule');
-
-  // remoteStorage.util.setLogLevel('debug');
+  remoteStorage.util.unsilenceLogger('store::localstorage');
 
   $(function() {
 
@@ -25,8 +25,6 @@ define([
 
     tree.setLoading('/');
     tree.setLoading('/public/');
-
-    root.use('/', true);
 
     var ready = false;
 
@@ -41,22 +39,24 @@ define([
     remoteStorage.onWidget('ready', function() {
       ready = true;
       tree.load('/');
-      tree.load('/public/');
+      $('li.dir[data-path="/public/"]').html("(sorry, /public/ is broken for now...");
 
       tree.restoreOpened();
     });
 
-    root.on('conflict', function(event) {
-      console.error('conflict', event);
-    });
+    // root.on('conflict', function(event) {
+    //   console.error('conflict', event);
+    // });
 
-    root.on('change', function() {
-      console.log("EVENT", arguments);
-    });
+    // root.on('change', function() {
+    //   console.log("EVENT", arguments);
+    // });
 
     remoteStorage.claimAccess('root', 'rw').
+      then(util.curry(remoteStorage.root.use, '/', true)).
       then(function() {
         remoteStorage.displayWidget('remotestorage-connect');
+        remoteStorage.schedule.disable();
       });
 
     $(window).bind('popstate', function() {

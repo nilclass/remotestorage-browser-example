@@ -66,7 +66,7 @@ define([
 
     root.getListing(path).call('sort').then(function(items) {
       items.forEach(function(item) {
-        if(path == '/' && item == 'public/') return;
+        console.log('path', path, 'item', item);
         if(isDir(item)) {
           parentElement.append(buildDirNode(path, item));
         }
@@ -75,7 +75,7 @@ define([
   }
 
   function getOpened(callback) {
-    root.getObject('.open-trees', function(opened) {
+    root.getObject('.open-trees').then(function(opened) {
       callback(opened || {});
     });
   }
@@ -95,7 +95,7 @@ define([
           }
         }
       }
-      root.setObject('setting-open-trees', '.open-trees', openTrees);
+      root.storeObject('setting-open-trees', '.open-trees', openTrees);
     });
   }
 
@@ -112,12 +112,17 @@ define([
 
   function openTree(li) {
     var path = li.attr('data-path');
-    if(remoteStorage.root.getListing(path).length == 0) {
+    if(! path) {
       return;
     }
-    storeOpened(path, true);
-    expandDir(path);
-    loadTree(path);
+    remoteStorage.root.getListing(path).then(function(listing) {
+      if(listing.length === 0) {
+        return;
+      } 
+      storeOpened(path, true);
+      expandDir(path);
+      loadTree(path);
+    });
   }
 
   function closeTree(li) {
