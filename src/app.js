@@ -38,18 +38,16 @@ define([
 
     remoteStorage.onWidget('ready', function() {
       ready = true;
-      tree.load('/');
       $('li.dir[data-path="/public/"]').html("(sorry, /public/ is broken for now...");
 
-      tree.restoreOpened();
+      tree.refresh();
     });
 
     // root.on('conflict', function(event) {
     //   console.error('conflict', event);
     // });
 
-    // root.on('change', function() {
-    //   console.log("EVENT", arguments);
+    // root.on('change', function(event) {
     // });
 
     remoteStorage.claimAccess('root', 'rw').

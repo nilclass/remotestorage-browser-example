@@ -34,27 +34,27 @@ define([
     return $('li.dir[data-path="' + path + '"]');
   }
 
-  function buildDirNode(parentPath, item) {
-    var fullPath = parentPath + item;
+  function buildDirNode(path, item) {
     var li = $('<li>');
     li.addClass('dir');
-    li.attr('data-path', fullPath);
-    if(hasChildDirs(fullPath)) {
+    li.attr('data-path', path);
+    if(hasChildDirs(path)) {
       li.append($('<span class="expand icon-chevron-right"></span>'));
     } else {
       li.append($('<span class="icon-none"></span>'));
     }
     li.append($('<span class="name"></span>').text(item));
-    root.hasDiff(fullPath).then(function(result) {
+    root.hasDiff(path).then(function(result) {
       result && li.addClass('has-diff');
     });
-    if($('#directory-tree').attr('data-current') == fullPath) {
+    if($('#directory-tree').attr('data-current') == path) {
       li.addClass('current');
     }
     return li;
   }
 
   function loadTree(path) {
+    console.log('loadTree', path);
     var parentLi = findDirLi(path);
     clearLoading(path, parentLi);
     var parentElement = parentLi.find('> ul');
@@ -65,10 +65,13 @@ define([
     }
 
     root.getListing(path).call('sort').then(function(items) {
+      console.log(path, "ITEMS", items);
       items.forEach(function(item) {
         console.log('path', path, 'item', item);
-        if(isDir(item)) {
-          parentElement.append(buildDirNode(path, item));
+        var itemPath = path + item;
+        if(isDir(itemPath) && findDirLi(itemPath).length === 0) {
+          parentElement.append(buildDirNode(itemPath, item));
+          loadTree(itemPath);
         }
       });
     });
@@ -200,6 +203,10 @@ define([
     $('#directory-tree').attr('data-current', path);
   }
 
+  function refresh() {
+    loadTree('/');
+  }
+
   $('#directory-tree li .name').live('click', function(event) {
     var path = $(event.target).closest('li.dir').attr('data-path');
     jumpTo(path);
@@ -217,9 +224,9 @@ define([
   return {
     setLoading: setLoading,
     open: openTree,
-    load: loadTree,
     select: selectDirectory,
-    restoreOpened: restoreOpened
+    restoreOpened: restoreOpened,
+    refresh: refresh
   }
 
 });
