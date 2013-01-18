@@ -205,6 +205,7 @@ define([
 
   function refresh() {
     loadTree('/');
+    loadTree('/public/');
   }
 
   $('#directory-tree li .name').live('click', function(event) {
