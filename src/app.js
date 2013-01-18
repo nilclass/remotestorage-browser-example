@@ -38,7 +38,6 @@ define([
 
     remoteStorage.onWidget('ready', function() {
       ready = true;
-      $('li.dir[data-path="/public/"]').html("(sorry, /public/ is broken for now...");
 
       tree.refresh();
     });
