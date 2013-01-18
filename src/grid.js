@@ -184,43 +184,16 @@ define([
     return row;
   }
 
-  function displayForm(path, data, mimeType, mode) {
-    var text = (typeof(data) == 'string') ? data : JSON.stringify(data);
+  function displayForm(path, data, mimeType) {
+    var text = (typeof(data) == 'string') ? data : JSON.stringify(data, undefined, 2);
     var form = $('<form>').attr('data-path', path);
     var filename = util.isDir(path) ? '' : util.baseName(path);
     
     form.append(inputRow('Filename', 'filename', filename, 'text'));
     form.append(inputRow('MIME type', 'mimeType', mimeType, 'text'));
 
-    if(! mode) {
-      mode = 'generic';
-    }
-
-    var tabs = $('<ul>').addClass('nav').addClass('nav-tabs');
-    tabs.append(makeTab("Generic", path, 'generic', mode));
-    if(mimeType == 'application/json') {
-      tabs.append(makeTab("JSON", path, 'json', mode));
-    }
-
-    form.append(tabs);
-
-    if(mode == 'generic') {
-      form.append($('<label>Data</label>'));
-      form.append($('<textarea name="data">').attr('value', text));
-    } else if(mode == 'json') {
-      if(typeof(data) == 'object') {
-        form.append($('<strong>').text("THIS DATA WONT BE SAVED, FEATURE NOT FULLY IMPLEMENTED! USE THE GENERIC EDITOR INSTEAD"));
-        for(var key in data) {
-          if(typeof(data[key]) == 'object') {
-            form.append(dummyRow(key));
-          } else {
-            form.append(inputRow(key, key, data[key], 'text'));
-          }
-        }
-      } else {
-        form.append("INVALID JSON!!!!");
-      }
-    }
+    form.append($('<label>Data</label>'));
+    form.append($('<textarea name="data">').attr('value', text));
 
     $('#content').append(form);
     adjustButtons();
