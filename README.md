@@ -8,4 +8,3 @@ This app lets you browse the files on your remotestorage
 * binary data is not supported
 * it only works for private data in <code>/:module/</code>, not for public data in <code>/public/:module/</code>.
 * app icon and favicon are missing
-* the cube of the remoteStorage widget is not showing
