@@ -38,11 +38,7 @@ define([
     var li = $('<li>');
     li.addClass('dir');
     li.attr('data-path', path);
-    if(hasChildDirs(path)) {
-      li.append($('<span class="expand icon-chevron-right"></span>'));
-    } else {
-      li.append($('<span class="icon-none"></span>'));
-    }
+    li.append($('<span class="expand icon-none"></span>'));
     li.append($('<span class="name"></span>').text(item));
     root.hasDiff(path).then(function(result) {
       result && li.addClass('has-diff');
@@ -58,6 +54,7 @@ define([
     var parentLi = findDirLi(path);
     clearLoading(path, parentLi);
     var parentElement = parentLi.find('> ul');
+    var iconElement = parentLi.find('> .expand');
 
     if(! parentElement) {
       console.error("Failed to find parent for: " + path);
@@ -66,10 +63,16 @@ define([
 
     root.getListing(path).call('sort').then(function(items) {
       console.log(path, "ITEMS", items);
+      var hasIcon = false;
       items.forEach(function(item) {
         console.log('path', path, 'item', item);
         var itemPath = path + item;
         if(isDir(itemPath) && findDirLi(itemPath).length === 0) {
+          if(! hasIcon) {
+            iconElement.removeClass('icon-none');
+            iconElement.addClass('icon-chevron-right');
+            hasIcon = true;
+          }
           parentElement.append(buildDirNode(itemPath, item));
           loadTree(itemPath);
         }
@@ -102,16 +105,6 @@ define([
     });
   }
 
-
-  function hasChildDirs(path) {
-    var items = root.getListing(path)
-    for(var i=0;i<items.length;i++) {
-      if(isDir(items[i])) {
-        return true;
-      }
-    }
-    return false;
-  }
 
   function openTree(li) {
     var path = li.attr('data-path');
@@ -213,7 +206,7 @@ define([
     jumpTo(path);
   });
 
-  $('#directory-tree li .expand').live('click', function(event) {
+  $('#directory-tree li > .expand').live('click', function(event) {
     var li = $(event.target).closest('li.dir');
     if($(event.target).hasClass('icon-chevron-right')) {
       openTree(li);

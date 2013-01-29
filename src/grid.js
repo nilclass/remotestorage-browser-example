@@ -177,16 +177,9 @@ define([
     return row;
   }
 
-  function dummyRow(key) {
-    var row = $('<div>').addClass('input');
-    row.append($('<label>').text(key + ':'));
-    row.append($('<input>').attr('type', 'text').attr('disabled', 'disabled').val("not editable"));
-    return row;
-  }
-
   function displayForm(path, data, mimeType) {
     var text = (typeof(data) == 'string') ? data : JSON.stringify(data, undefined, 2);
-    var form = $('<form>').attr('data-path', path);
+    var form = $('<form id="editor">').attr('data-path', path);
     var filename = util.isDir(path) ? '' : util.baseName(path);
     
     form.append(inputRow('Filename', 'filename', filename, 'text'));
@@ -295,6 +288,10 @@ define([
     $('#notice-container').html('');
   }
 
+  function disableAllActions() {
+    $('#content button[data-action]').attr('disabled', true);
+  }
+
   // WATCH FILENAME CHANGES
   $('#content input[name="filename"]').live('blur', function() {
     adjustButtons();
@@ -333,12 +330,19 @@ define([
     var mimeType = $(form[0].mimeType).val();
     var data = $(form[0].data).val();
 
+    if(mimeType === 'application/json') {
+      try {
+        JSON.parse(data)
+      } catch(exc) {
+        displayEditorError("Invalid JSON data: " + data);
+        return;
+      }
+    }
+
     if(util.isDir(path)) {
       baseName = fileName;
       path += baseName;
     }
-
-    var newPath = util.containingDir(path) + fileName;
 
     var newPath = util.containingDir(path) + fileName;
     root.storeFile(mimeType, newPath, data).
@@ -356,8 +360,11 @@ define([
   $('#content button[data-action="destroy"]').live('click', function() {
     var path = $('#content form').attr('data-path');
 
-    root.removeObject(path);
-    jumpTo(util.containingDir(path));
+    disableAllActions();
+
+    root.remove(path).then(function() {
+      jumpTo(util.containingDir(path));
+    });
   });
 
   return {
