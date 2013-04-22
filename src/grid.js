@@ -104,9 +104,6 @@ define([
     var titleRow = $('<tr>');
     titleRow.append('<th></th>');
     titleRow.append('<th>Name</th>');
-    titleRow.append('<th>MIME type</th>');
-    titleRow.append('<th>JSON-LD type</th>');
-    titleRow.append('<th>Last updated</th>');
     table.append(titleRow);
     $('#content').append(table);
 
@@ -118,23 +115,9 @@ define([
 
         function renderRow(key)  {
           var row = $('<tr>');
-          remoteStorage.root.getFile(path + key).then(function(node) {
-            var jsonType = '';
-            if((! util.isDir(key)) && node && node.mimeType == 'application/json' && node.data && node.data['@type']) {
-              jsonType = node.data['@type'];
-            }
-            row.attr('data-path', path + key);
-            row.append($('<td>').append($('<span>').addClass(util.isDir(path + key) ? 'icon-folder-open' : 'icon-file')));
-            row.append($('<td class="name">').text(key));
-            row.append($('<td>').text(node.mimeType));
-            row.append($('<td title="' + jsonType + '">').text(jsonType.split('/').slice(-2).join('/')));
-            row.append($('<td>').text(new Date(items[key])));
-            
-            root.hasDiff(path + key).
-              then(function(result) {
-                result && row.addClass('has-diff');
-              });
-          });
+          row.attr('data-path', path + key);
+          row.append($('<td>').append($('<span>').addClass(util.isDir(path + key) ? 'icon-folder-open' : 'icon-file')));
+          row.append($('<td class="name">').text(key));
           return row;
         }
 
