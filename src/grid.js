@@ -176,10 +176,16 @@ define([
   }
 
   function displayImage(path, data, mimeType) {
-    var view = new Uint8Array(data);
-    var blob = new Blob([view], { type: mimeType });
+    var src;
+    if(path.match(/^\/public\//)) {
+      src = remoteStorage.root.getItemURL(path);
+    } else {
+      var view = new Uint8Array(data);
+      var blob = new Blob([view], { type: mimeType });
+      src = common().createObjectURL(blob);
+    }
     var img = $('<img>')
-      .attr('src', common().createObjectURL(blob))
+      .attr('src', src)
       .attr('data-path', path);
     $('#content').append(img);
   }
