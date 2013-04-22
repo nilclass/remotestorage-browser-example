@@ -5,13 +5,10 @@ define([
   'remotestorage/modules/root',
   './common',
   './tree',
-  './settings',
-  'remotestorage/lib/shell'
-], function($, _ignored, remoteStorage, root, common, tree, settings, shell) {
+  './settings'
+], function($, _ignored, remoteStorage, root, common, tree, settings) {
 
   window.remoteStorage = remoteStorage;
-
-  window.shell = shell;
 
   var util = remoteStorage.util;
 
@@ -20,41 +17,28 @@ define([
 
   $(function() {
 
-    //remoteStorage.util.setLogLevel('debug');
-    // remoteStorage.util.silenceAllLoggers();
-
     tree.setLoading('/');
     tree.setLoading('/public/');
 
     var ready = false;
 
-    remoteStorage.onWidget('state', function(state) {
-      if(state == 'connected' || state == 'busy') {
-        $(document.body).addClass('connected');
-      } else if(state == 'disconnected') {
-        $(document.body).removeClass('connected');
-      }
-    });
-
-    remoteStorage.onWidget('ready', function() {
+    remoteStorage.on('ready', function() {
       ready = true;
 
+      $(document.body).addClass('connected');
+      try {
       tree.refresh();
+      } catch(exc) { console.error('exc', exc.stack); }
     });
 
-    // root.on('conflict', function(event) {
-    //   console.error('conflict', event);
-    // });
+    remoteStorage.on('disconnect', function() {
+      $(document.body).removeClass('connected');
+    });
 
-    // root.on('change', function(event) {
-    // });
-
-    remoteStorage.claimAccess('root', 'rw').
-      then(util.curry(remoteStorage.root.use, '/', true)).
-      then(function() {
-        remoteStorage.displayWidget('remotestorage-connect');
-        remoteStorage.schedule.disable();
-      });
+    remoteStorage.claimAccess('root', 'rw');
+    remoteStorage.root.release('/');
+    remoteStorage.displayWidget('remotestorage-connect');
+    remoteStorage.schedule.disable();
 
     $(window).bind('popstate', function() {
       var md = document.location.hash.match(/^#!(.+?)(?:!(.+)|)$/);
@@ -72,7 +56,7 @@ define([
       if(ready) {
         action();
       } else {
-        remoteStorage.onWidget('ready', action);
+        remoteStorage.on('ready', action);
       }
     });
     

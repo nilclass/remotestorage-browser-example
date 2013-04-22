@@ -50,7 +50,6 @@ define([
   }
 
   function loadTree(path) {
-    console.log('loadTree', path);
     var parentLi = findDirLi(path);
     clearLoading(path, parentLi);
     var parentElement = parentLi.find('> ul');
@@ -61,11 +60,10 @@ define([
       return;
     }
 
-    root.getListing(path).call('sort').then(function(items) {
-      console.log(path, "ITEMS", items);
+    root.getListing(path).then(function(items) {
+      items = items.sort();
       var hasIcon = false;
       items.forEach(function(item) {
-        console.log('path', path, 'item', item);
         var itemPath = path + item;
         if(isDir(itemPath) && findDirLi(itemPath).length === 0) {
           if(! hasIcon) {
@@ -80,31 +78,6 @@ define([
     });
   }
 
-  function getOpened(callback) {
-    root.getObject('.open-trees').then(function(opened) {
-      callback(opened || {});
-    });
-  }
-
-  function storeOpened(path, value) {
-    getOpened(function(openTrees) {
-      if(value) {
-        if(openTrees[path]) {
-          return;
-        }
-        openTrees[path] = true;
-      } else {
-        var re = new RegExp('^' + path);
-        for(var key in openTrees) {
-          if(re.test(key)) {
-            delete openTrees[key];
-          }
-        }
-      }
-      root.storeObject('setting-open-trees', '.open-trees', openTrees);
-    });
-  }
-
 
   function openTree(li) {
     var path = li.attr('data-path');
@@ -115,7 +88,6 @@ define([
       if(listing.length === 0) {
         return;
       } 
-      storeOpened(path, true);
       expandDir(path);
       loadTree(path);
     });
@@ -123,7 +95,6 @@ define([
 
   function closeTree(li) {
     var path = li.attr('data-path')
-    storeOpened(path, false);
     collapseDir(path);
   }
 
@@ -160,16 +131,6 @@ define([
         openTree(findDirLi(p));
       }
     }
-  }
-
-  function restoreOpened() {
-    getOpened(function(openTrees) {
-      for(var path in openTrees) {
-        if(path[0] == '/') {
-          openDirUpto(path);
-        }
-      }
-    });
   }
 
   function clearLoading(path, li) {
@@ -219,7 +180,6 @@ define([
     setLoading: setLoading,
     open: openTree,
     select: selectDirectory,
-    restoreOpened: restoreOpened,
     refresh: refresh
   }
 

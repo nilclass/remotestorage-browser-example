@@ -334,7 +334,7 @@ define([
       try {
         JSON.parse(data)
       } catch(exc) {
-        displayEditorError("Invalid JSON data: " + data);
+        console.log("Invalid JSON data: " + data);
         return;
       }
     }
@@ -345,7 +345,7 @@ define([
     }
 
     var newPath = util.containingDir(path) + fileName;
-    root.storeFile(mimeType, newPath, data).
+    root.storeFile(mimeType, newPath, data, false).
       then(function() {
         if(newPath !== path) {
           return root.remove(path);
