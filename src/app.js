@@ -2,7 +2,7 @@ define([
   'jquery',
   'bootstrap',
   'remotestorage/remoteStorage',
-  'remotestorage/modules/root',
+  'remotestorage-root',
   './common',
   './tree',
   './settings'
