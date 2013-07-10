@@ -1,19 +1,13 @@
 define([
   'jquery',
   'bootstrap',
-  'remotestorage/remoteStorage',
-  'remotestorage-root',
+  'remotestorage',
   './common',
   './tree',
   './settings'
-], function($, _ignored, remoteStorage, root, common, tree, settings) {
+], function($, _ignored, remoteStorage, common, tree, settings) {
 
   window.remoteStorage = remoteStorage;
-
-  var util = remoteStorage.util;
-
-  remoteStorage.util.silenceAllLoggers();
-  remoteStorage.util.unsilenceLogger('store::localstorage');
 
   $(function() {
 
@@ -35,10 +29,7 @@ define([
       $(document.body).removeClass('connected');
     });
 
-    remoteStorage.claimAccess('root', 'rw');
-    remoteStorage.root.release('/');
-    remoteStorage.displayWidget('remotestorage-connect');
-    remoteStorage.schedule.disable();
+    remoteStorage.access.claim('root', 'rw');
 
     $(window).bind('popstate', function() {
       var md = document.location.hash.match(/^#!(.+?)(?:!(.+)|)$/);
@@ -46,12 +37,12 @@ define([
       if(md) {
         console.log("DISPATCH", 'path', md[1], 'extra', md[2]);
         if(md[1][0] == '!') {
-          action = util.curry(settings.display, md[1].slice(1));
+          action = function() { settings.display(md[1].slice(1)); };
         } else {
-          action = util.curry(common.openPath, md[1], md[2]);
+          action = function() { common.openPath(md[1], md[2]); };
         }
       } else {
-        action = util.curry(common.jumpTo, '/');
+        action = function() { common.jumpTo('/'); };
       }
       if(ready) {
         action();
