@@ -1,10 +1,9 @@
 define([
   'require',
   'jquery',
-  'remotestorage/remoteStorage',
-  'remotestorage-root',
+  'remotestorage',
   './common'
-], function(require, $, remoteStorage, root, common) {
+], function(require, $, remoteStorage, common) {
 
   var parentPath = remoteStorage.util.containingDir;
   var isDir = remoteStorage.util.isDir;
@@ -16,7 +15,9 @@ define([
     common.jumpTo.apply(common, arguments);
   }
 
-  remoteStorage.root.on('conflict', function(conflict) {
+  var root = remoteStorage.scope('/');
+
+  root.on('conflict', function(conflict) {
     if(conflict.path == '/.open-trees') {
       conflict.resolve('local');
     }
@@ -40,9 +41,6 @@ define([
     li.attr('data-path', path);
     li.append($('<span class="expand icon-none"></span>'));
     li.append($('<span class="name"></span>').text(item));
-    root.hasDiff(path).then(function(result) {
-      result && li.addClass('has-diff');
-    });
     if($('#directory-tree').attr('data-current') == path) {
       li.addClass('current');
     }
@@ -84,7 +82,7 @@ define([
     if(! path) {
       return;
     }
-    remoteStorage.root.getListing(path).then(function(listing) {
+    root.getListing(path).then(function(listing) {
       if(listing.length === 0) {
         return;
       } 
