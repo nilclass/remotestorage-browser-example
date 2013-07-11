@@ -59,20 +59,22 @@ define([
     }
 
     root.getListing(path).then(function(items) {
-      items = items.sort();
-      var hasIcon = false;
-      items.forEach(function(item) {
-        var itemPath = path + item;
-        if(isDir(itemPath) && findDirLi(itemPath).length === 0) {
-          if(! hasIcon) {
-            iconElement.removeClass('icon-none');
-            iconElement.addClass('icon-chevron-right');
-            hasIcon = true;
+      if(items) {
+        items = items.sort();
+        var hasIcon = false;
+        items.forEach(function(item) {
+          var itemPath = path + item;
+          if(isDir(itemPath) && findDirLi(itemPath).length === 0) {
+            if(! hasIcon) {
+              iconElement.removeClass('icon-none');
+              iconElement.addClass('icon-chevron-right');
+              hasIcon = true;
+            }
+            parentElement.append(buildDirNode(itemPath, item));
+            loadTree(itemPath);
           }
-          parentElement.append(buildDirNode(itemPath, item));
-          loadTree(itemPath);
-        }
-      });
+        });
+      }
     });
   }
 
