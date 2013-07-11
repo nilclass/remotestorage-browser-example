@@ -178,7 +178,7 @@ define([
   function displayImage(path, data, mimeType) {
     var src;
     if(path.match(/^\/public\//)) {
-      src = remoteStorage.root.getItemURL(path);
+      src = root.getItemURL(path);
     } else {
       var view = new Uint8Array(data);
       var blob = new Blob([view], { type: mimeType });
@@ -347,7 +347,12 @@ define([
 
   // DESTROY FILE
   $('#content button[data-action="destroy"]').live('click', function() {
-    var path = $('#content form').attr('data-path');
+    var path = $('#content form').attr('data-path') || $('#content img').attr('data-path');
+
+    if(! path) {
+      alert("BUG: failed to determine path to destroy.");
+      return;
+    }
 
     disableAllActions();
 
