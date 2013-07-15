@@ -11,7 +11,7 @@ define([
 
   $(function() {
 
-    remoteStorage.displayWidget;
+    remoteStorage.displayWidget();
 
     tree.setLoading('/');
     tree.setLoading('/public/');
