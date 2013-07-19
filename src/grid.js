@@ -17,7 +17,7 @@ define([
   }
 
   function jumpTo() {
-    common().jumpTo.apply(common, arguments);
+    common().jumpTo.apply(common(), arguments);
   }
 
   function pathParts(path) {
@@ -123,7 +123,7 @@ define([
 
         if(! items) {
           if(path != '/') {
-            common.jumpTo(util.containingDir(path));
+            common().jumpTo(util.containingDir(path));
           } else {
             throw("BUG: root node doesn't exist.");
           }
