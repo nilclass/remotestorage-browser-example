@@ -16,7 +16,7 @@ define([
   return {
     jumpTo: jumpTo,
     openPath: openPath,
-    createObjectURL: window.URL ? window.URL.createObjectURL.bind(window.URL) : window.webkitURL.createObjectURL.bind(window.webkitURL)
+    createObjectURL: window.URL ? window.URL.createObjectURL.bind(window.URL) : (window.webkitURL ? window.webkitURL.createObjectURL.bind(window.webkitURL) : function(obj) { return obj; })
   }
 
 });
