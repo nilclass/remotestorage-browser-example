@@ -8,6 +8,7 @@ define([
 ], function($, _ignored, remoteStorage, common, tree, settings) {
 
   window.remoteStorage = remoteStorage;
+  remoteStorage.enableLog();
 
   $(function() {
 
