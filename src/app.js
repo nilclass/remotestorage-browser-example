@@ -1,7 +1,7 @@
 define([
   'jquery',
   'bootstrap',
-  'remotestorage/remoteStorage',
+  'remotestorage/remotestorage',
   'remotestorage/modules/root',
   './common',
   './tree',

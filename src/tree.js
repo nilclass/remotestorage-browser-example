@@ -1,7 +1,7 @@
 define([
   'require',
   'jquery',
-  'remotestorage/remoteStorage',
+  'remotestorage/remotestorage',
   'remotestorage/modules/root',
   './common'
 ], function(require, $, remoteStorage, root, common) {
