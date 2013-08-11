@@ -3,11 +3,12 @@ define([
   'jquery',
   'remotestorage/remotestorage',
   'remotestorage/modules/root',
+  'util',
   './common'
-], function(require, $, remoteStorage, root, common) {
+], function(require, $, remoteStorage, root, util, common) {
 
-  var parentPath = remoteStorage.util.containingDir;
-  var isDir = remoteStorage.util.isDir;
+  var parentPath = util.containingDir;
+  var isDir = util.isDir;
 
   function jumpTo() {
     if(! common) {
