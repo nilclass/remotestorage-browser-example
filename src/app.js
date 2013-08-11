@@ -13,22 +13,14 @@ define([
 
   window.shell = shell;
 
-  var util = remoteStorage.util;
-
-  remoteStorage.util.silenceAllLoggers();
-  remoteStorage.util.unsilenceLogger('store::localstorage');
-
   $(function() {
-
-    //remoteStorage.util.setLogLevel('debug');
-    // remoteStorage.util.silenceAllLoggers();
 
     tree.setLoading('/');
     tree.setLoading('/public/');
 
     var ready = false;
 
-    remoteStorage.onWidget('state', function(state) {
+    remoteStorage.on('state', function(state) {
       if(state == 'connected' || state == 'busy') {
         $(document.body).addClass('connected');
       } else if(state == 'disconnected') {
@@ -36,23 +28,16 @@ define([
       }
     });
 
-    remoteStorage.onWidget('ready', function() {
+    remoteStorage.on('ready', function() {
       ready = true;
 
       tree.refresh();
     });
 
-    // root.on('conflict', function(event) {
-    //   console.error('conflict', event);
-    // });
-
-    // root.on('change', function(event) {
-    // });
-
-    remoteStorage.claimAccess('root', 'rw').
+    remoteStorage.access.claim('root', 'rw').
       then(util.curry(remoteStorage.root.use, '/', true)).
       then(function() {
-        remoteStorage.displayWidget('remotestorage-connect');
+        remoteStorage.displayWidget();
         remoteStorage.schedule.disable();
       });
 
@@ -72,7 +57,7 @@ define([
       if(ready) {
         action();
       } else {
-        remoteStorage.onWidget('ready', action);
+        remoteStorage.on('ready', action);
       }
     });
     
