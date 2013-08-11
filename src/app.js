@@ -6,7 +6,7 @@ define([
   './common',
   './tree',
   './settings',
-  'remotestorage/lib/shell'
+  'shell'
 ], function($, _ignored, remoteStorage, root, common, tree, settings, shell) {
 
   window.remoteStorage = remoteStorage;
@@ -19,14 +19,6 @@ define([
     tree.setLoading('/public/');
 
     var ready = false;
-
-    remoteStorage.on('state', function(state) {
-      if(state == 'connected' || state == 'busy') {
-        $(document.body).addClass('connected');
-      } else if(state == 'disconnected') {
-        $(document.body).removeClass('connected');
-      }
-    });
 
     remoteStorage.on('ready', function() {
       ready = true;
