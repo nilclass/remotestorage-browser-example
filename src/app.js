@@ -23,12 +23,8 @@ define([
       tree.refresh();
     });
 
-    remoteStorage.access.claim('root', 'rw').
-      then(util.curry(remoteStorage.root.use, '/', true)).
-      then(function() {
-        remoteStorage.displayWidget();
-        remoteStorage.schedule.disable();
-      });
+    remoteStorage.access.claim('root', 'rw');
+    remoteStorage.displayWidget();
 
     $(window).bind('popstate', function() {
       var md = document.location.hash.match(/^#!(.+?)(?:!(.+)|)$/);
