@@ -5,13 +5,10 @@ define([
   'remotestorage/modules/root',
   './common',
   './tree',
-  './settings',
-  'shell'
-], function($, _ignored, remoteStorage, root, common, tree, settings, shell) {
+  './settings'
+], function($, _ignored, remoteStorage, root, common, tree, settings) {
 
   window.remoteStorage = remoteStorage;
-
-  window.shell = shell;
 
   $(function() {
 
