@@ -215,8 +215,7 @@ define([
 
     $('#content').append(makeBreadcrumbs(path));
 
-    root.getFile(path).then(function(item) {
-
+    function itemLoaded(item) {
       var btnGroup = $('<div class="btn-group"></div>');
       btnGroup.append(makeButton("back", "Back", "icon-arrow-left"));
       btnGroup.append(makeButton("save", "Save", "icon-ok"));
@@ -233,7 +232,14 @@ define([
       } else {
         displayForm(path, item.data, item.mimeType, mode);
       }
-    });
+    }
+
+    if(util.isDir(path)) {
+      // new file
+      itemLoaded({ data: '', mimeType: '' });
+    } else {
+      root.getFile(path).then(itemLoaded);
+    }
   }
 
   $('#content table tbody td').live('click', function(event) {
@@ -343,7 +349,8 @@ define([
       path += baseName;
     }
 
-    var newPath = util.containingDir(path) + fileName;
+    var newPath = path.replace(new RegExp(baseName + '$'), '') + fileName;
+    console.log('storing file. path is', path, 'newPath is', newPath);
     root.storeFile(mimeType, newPath, data, false).
       then(function() {
         if(newPath !== path) {
