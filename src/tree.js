@@ -47,7 +47,7 @@ define([
     return li;
   }
 
-  function loadTree(path) {
+  function loadChildren(path) {
     var parentLi = findDirLi(path);
     clearLoading(path, parentLi);
     var parentElement = parentLi.find('> ul');
@@ -71,7 +71,6 @@ define([
               hasIcon = true;
             }
             parentElement.append(buildDirNode(itemPath, item));
-            loadTree(itemPath);
           }
         });
       }
@@ -89,7 +88,7 @@ define([
         return;
       } 
       expandDir(path);
-      loadTree(path);
+      loadChildren(path);
     });
   }
 
@@ -158,8 +157,8 @@ define([
   }
 
   function refresh() {
-    loadTree('/');
-    loadTree('/public/');
+    loadChildren('/');
+    loadChildren('/public/');
   }
 
   $('#directory-tree li .name').live('click', function(event) {
