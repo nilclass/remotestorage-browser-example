@@ -10,6 +10,10 @@ define([
   window.remoteStorage = remoteStorage;
   remoteStorage.enableLog();
 
+  remoteStorage.setApiKeys('googledrive', {
+    client_id: '76638044554.apps.googleusercontent.com'
+  });
+
   $(function() {
 
     remoteStorage.displayWidget();
