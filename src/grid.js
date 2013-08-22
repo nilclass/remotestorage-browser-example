@@ -173,6 +173,16 @@ define([
 
     $('#content').append(form);
     adjustButtons();
+
+    // focus input (filename for new files, otherwise data)
+    setTimeout(function() {
+      var f = form[0];
+      if(f.filename.value == '') {
+        f.filename.focus();
+      } else {
+        f.data.focus();
+      }
+    });
   }
 
   function displayImage(path, data, mimeType) {
